@@ -32,22 +32,25 @@
 // config.h is parsed in private.h (ENABLE_KVM_LEGACY)
 #include "private.h"
 
+#ifdef ENABLE_LIBVIRT
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
+#include "libvirt_wrapper.h"
+#endif
 #ifndef ENABLE_KVM_LEGACY
 # include <libkvmi.h>
 # include "libkvmi_wrapper.h"
 #endif
 
-#include "libvirt_wrapper.h"
-
 typedef struct kvm_instance {
+#ifdef ENABLE_LIBVIRT
     virConnectPtr conn;
     virDomainPtr dom;
+    libvirt_wrapper_t libvirt;
+#endif
     uint32_t id;
     char *name;
     char *ds_path;
-    libvirt_wrapper_t libvirt;
 #ifdef ENABLE_KVM_LEGACY
     int socket_fd;
 #else

@@ -1,6 +1,10 @@
 target_sources(vmi_shared PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/kvm_common.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/kvm_common.c)
+
+if (ENABLE_LIBVIRT)
+    target_sources(vmi_shared PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/libvirt_wrapper.c)
+endif ()
 
 if (ENABLE_KVM_LEGACY)
     target_sources(vmi_shared PRIVATE

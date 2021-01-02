@@ -34,6 +34,7 @@ kvm_get_id_from_name(
     vmi_instance_t vmi,
     const char *name)
 {
+#ifdef ENABLE_LIBVIRT
     virDomainPtr dom = NULL;
     uint64_t domainid = VMI_INVALID_DOMID;
     kvm_instance_t *kvm = kvm_get_instance(vmi);
@@ -55,6 +56,9 @@ kvm_get_id_from_name(
         kvm->libvirt.virDomainFree(dom);
 
     return domainid;
+#else
+    return 0;
+#endif
 }
 
 status_t
@@ -63,6 +67,7 @@ kvm_get_name_from_id(
     uint64_t domainid,
     char **name)
 {
+#ifdef ENABLE_LIBVIRT
     virDomainPtr dom = NULL;
     const char* temp_name = NULL;
     kvm_instance_t *kvm = kvm_get_instance(vmi);
@@ -84,6 +89,10 @@ kvm_get_name_from_id(
     }
 
     return VMI_FAILURE;
+#else
+    *name = strdup("kvmi");
+    return VMI_SUCCESS;
+#endif
 }
 
 uint64_t
@@ -106,6 +115,7 @@ kvm_check_id(
     vmi_instance_t vmi,
     uint64_t domainid)
 {
+#ifdef ENABLE_LIBVIRT
     virDomainPtr dom = NULL;
     kvm_instance_t *kvm = kvm_get_instance(vmi);
 
@@ -117,6 +127,7 @@ kvm_check_id(
 
     if (dom)
         kvm->libvirt.virDomainFree(dom);
+#endif
 
     return VMI_SUCCESS;
 }
@@ -126,6 +137,7 @@ kvm_get_name(
     vmi_instance_t vmi,
     char **name)
 {
+#ifdef ENABLE_LIBVIRT
     kvm_instance_t *kvm = kvm_get_instance(vmi);
 
     const char *tmpname = kvm->libvirt.virDomainGetName(kvm->dom);
@@ -138,6 +150,10 @@ kvm_get_name(
     } else {
         return VMI_FAILURE;
     }
+#else
+    *name = strdup("kvmi");
+    return VMI_SUCCESS;
+#endif
 }
 
 void
@@ -182,6 +198,7 @@ kvm_test(
     uint64_t UNUSED(init_flags),
     vmi_init_data_t* UNUSED(init_data))
 {
+#ifdef ENABLE_LIBVIRT
     struct vmi_instance _vmi = {0};
     vmi_instance_t vmi = &_vmi;
 
@@ -211,4 +228,7 @@ kvm_test(
 
     kvm_destroy(vmi);
     return VMI_FAILURE;
+#else
+    return VMI_SUCCESS;
+#endif
 }

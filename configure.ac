@@ -70,6 +70,13 @@ AC_ARG_ENABLE([kvm],
       [enable_kvm=yes])
 AM_CONDITIONAL([WITH_KVM], [test x"$enable_kvm" = xyes])
 
+AC_ARG_ENABLE([libvirt],
+      [AS_HELP_STRING([--enable-libvirt],
+         [TODO @<:@no@:>@])],
+      [enable_libvirt=$enableval],
+      [enable_libvirt=yes])
+AM_CONDITIONAL([WITH_LIBVIRT], [test x"$enable_libvirt" = xyes])
+
 AC_ARG_ENABLE([kvm_legacy],
       [AS_HELP_STRING([--disable-kvm-legacy],
          [Enable support for legacy KVM driver @<:@no@:>@])],
@@ -303,8 +310,11 @@ AC_CHECK_LIB(json-c, json_object_get_uint64, [AC_DEFINE([JSONC_UINT64_SUPPORT], 
     [fi]
     AC_CHECK_LIB(m, ceil, [],
         [AC_MSG_ERROR(No libm found. Install missing package or re-run with --disable-kvm)])
-    AC_CHECK_HEADER(libvirt/libvirt.h, [],
-        [AC_MSG_ERROR([No libvirt headers found. Install missing package or re-run with --disable-kvm])])
+    [if test "$enable_libvirt" = "yes"]
+    [then]
+        AC_CHECK_HEADER(libvirt/libvirt.h, [],
+            [AC_MSG_ERROR([No libvirt headers found. Install missing package or re-run with --disable-kvm])])
+    [fi]
     AC_DEFINE([ENABLE_KVM], [1], [Define to 1 to enable KVM support.])
     [if test "$enable_kvm_legacy" = "yes"]
     [then]

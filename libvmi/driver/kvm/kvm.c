@@ -42,8 +42,12 @@
 #include <glib.h>
 #include <math.h>
 #include <glib/gstdio.h>
+
+#ifdef ENABLE_LIBVIRT
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
+#endif
+
 #include <libkvmi.h>
 
 #include "private.h"
@@ -415,6 +419,7 @@ kvm_init(
         return VMI_FAILURE;
     }
 
+#ifdef ENABLE_LIBVIRT
     if ( VMI_FAILURE == create_libvirt_wrapper(kvm) ) {
         g_free(kvm);
         return VMI_FAILURE;
@@ -428,6 +433,7 @@ kvm_init(
     }
 
     kvm->conn = conn;
+#endif
 
     vmi->driver.driver_data = (void*)kvm;
 
@@ -462,6 +468,7 @@ kvm_close_vmi(vmi_instance_t vmi, kvm_instance_t *kvm)
         kvm->kvmi = NULL;
     }
 
+#ifdef ENABLE_LIBVIRT
     if (kvm->dom) {
         kvm->libvirt.virDomainFree(kvm->dom);
         kvm->dom = NULL;
@@ -471,6 +478,7 @@ kvm_close_vmi(vmi_instance_t vmi, kvm_instance_t *kvm)
         kvm->libvirt.virConnectClose(kvm->conn);
         kvm->conn = NULL;
     }
+#endif
 }
 
 status_t
@@ -503,6 +511,8 @@ kvm_init_vmi(
     dbprint(VMI_DEBUG_KVM, "--KVMi socket path: %s\n", socket_path);
 
     kvm_instance_t *kvm = kvm_get_instance(vmi);
+
+#ifdef ENABLE_LIBVIRT
     kvm->dom = kvm->libvirt.virDomainLookupByID(kvm->conn, kvm->id);
     if (NULL == kvm->dom) {
         dbprint(VMI_DEBUG_KVM, "--failed to find kvm domain\n");
@@ -517,6 +527,7 @@ kvm_init_vmi(
         goto err_exit;
     }
     dbprint(VMI_DEBUG_KVM, "--libvirt version %lu\n", libVer);
+#endif
 
     vmi->vm_type = NORMAL;
 
@@ -570,8 +581,10 @@ kvm_destroy(
         kvm_close_vmi(vmi, kvm);
 
         dlclose(kvm->libkvmi.handle);
+#ifdef ENABLE_LIBVIRT
         dlclose(kvm->libvirt.handle);
         dlclose(kvm->libvirt.handle_qemu);
+#endif
         g_free(kvm);
     }
 }

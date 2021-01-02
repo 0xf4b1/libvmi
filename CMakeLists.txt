@@ -159,6 +159,7 @@ add_subdirectory(doc)
 #-----------------------------------------------------------------------------
 add_feature_info(ENABLE_XEN ENABLE_XEN "Build Xen driver")
 add_feature_info(ENABLE_KVM ENABLE_KVM "Build KVM driver")
+add_feature_info(ENABLE_LIBVIRT ENABLE_LIBVIRT "Build with Libvirt")
 add_feature_info(ENABLE_BAREFLANK ENABLE_BAREFLANK "Build Bareflank driver")
 add_feature_info(ENABLE_FILE ENABLE_FILE "Build file driver")
 

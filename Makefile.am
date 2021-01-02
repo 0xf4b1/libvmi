@@ -67,8 +67,10 @@ endif
 if WITH_KVM
     drivers     += libvmi/driver/kvm/kvm.h \
                    libvmi/driver/kvm/kvm_private.h \
-                   libvmi/driver/kvm/kvm_common.c \
-                   libvmi/driver/kvm/libvirt_wrapper.c \
+                   libvmi/driver/kvm/kvm_common.c
+
+if WITH_LIBVIRT
+    drivers     += libvmi/driver/kvm/libvirt_wrapper.c \
                    libvmi/driver/kvm/libvirt_wrapper.h
 
 if WITH_KVM_LEGACY
